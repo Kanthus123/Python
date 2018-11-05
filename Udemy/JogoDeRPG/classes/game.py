@@ -58,6 +58,7 @@ class Pessoa:
 
     def escolher_acao(self):
         i = 1
+        print("\n" + bcolors.BOLD + self.nome + bcolors.ENDC)
         print(bcolors.HEADER + "Ações" + bcolors.ENDC)
         for item in self.acao:
             print(str(i) + ":", item)
@@ -77,8 +78,85 @@ class Pessoa:
             print(str(i) + ":", item["item"].nome, ":", item["item"].descricao, " (x", item["quantidade"], ")")
             i += 1
 
-    def get_status(self):
-        print("                        _________________________       __________")
+    def get_status_inimigo(self): #status dos inimigos
+        barra_hp = ""
+        barra_ticks = (self.hp / self.max_hp) * 100  / 2
+
+        while barra_ticks > 0:
+            barra_hp += "█"
+            barra_ticks -= 1
+
+        while len(barra_hp) < 50:
+            barra_hp += " "
+
+        hp_string = str(self.hp) + "/" + str(self.max_hp)
+        hp_atual = ""
+
+        if len(hp_string) < 11:
+            decrementa = 11 - len(hp_string)
+
+            while decrementa > 0:
+                hp_atual += " "
+                decrementa -= 1
+
+            hp_atual += hp_string
+        else:
+            hp_atual = hp_string
+
+        print("                           __________________________________________________")
         print(bcolors.BOLD + self.nome + ":        " +
-              str(self.hp) + "/" + str(self.max_hp) + "|" + bcolors.OKGREEN + "█████████████████████████" + bcolors.ENDC + bcolors.BOLD + "|" +
-              str(self.mp) + "/" + str(self.max_mp) + "|" + bcolors.OKBLUE + "██████████" + bcolors.ENDC + "|")
+              hp_atual + "|" + bcolors.FAIL + barra_hp + bcolors.ENDC + "|")
+
+    def get_status(self): #status dos jogadores
+        barra_hp = ""
+        barra_mp = ""
+        barra_ticks = (self.hp / self.max_hp) * 100  / 4
+        barra_ticks_mp = (self.mp / self.max_mp) * 100  / 10
+
+
+        while barra_ticks > 0:
+            barra_hp += "█"
+            barra_ticks -= 1
+
+        while len(barra_hp) < 25:
+            barra_hp += " "
+
+        while barra_ticks_mp > 0:
+            barra_mp += "█"
+            barra_ticks_mp -= 1
+
+        while len(barra_mp) < 10:
+            barra_mp += " "
+
+        hp_string = str(self.hp) + "/" + str(self.max_hp)
+        hp_atual = ""
+
+        if len(hp_string) < 9:
+            decrementa = 9 - len(hp_string)
+
+            while decrementa > 0:
+                hp_atual += " "
+                decrementa -= 1
+
+            hp_atual += hp_string
+        else:
+            hp_atual = hp_string
+
+        mp_string = str(self.mp) + "/" + str(self.max_mp)
+        mp_atual = ""
+
+        if len(mp_string) < 7:
+            decrementa = 7 - len(mp_string)
+
+            while decrementa > 0:
+                mp_atual += " "
+                decrementa -= 1
+
+            mp_atual += mp_string
+        else:
+            mp_atual = mp_string
+
+        print("                          _________________________             __________")
+        print(bcolors.BOLD + self.nome + ":        " +
+              hp_atual + "|" + bcolors.OKGREEN + barra_hp + bcolors.ENDC + bcolors.BOLD + "|    " +
+              mp_atual + "|" + bcolors.OKBLUE + barra_mp + bcolors.ENDC + "|")

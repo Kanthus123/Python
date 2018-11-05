@@ -1,4 +1,5 @@
 import colorama #importante para usar cores no console do Windows - https://pypi.org/project/colorama/
+import random
 from colorama import Fore
 from colorama import init
 from classes.game import Pessoa, bcolors
@@ -9,15 +10,15 @@ init() #inicia colorama no Windows
 
 print("\n\n")
 #Criar Magia Negra
-fire = Feiticos("Fire", 10, 100, "Magia Negra")
-thunder = Feiticos("Thunder", 10, 100, "Magia Negra")
-blizzard = Feiticos("Blizzard", 10, 100, "Magia Negra")
-meteor = Feiticos("Meteor", 20, 200, "Magia Negra")
-quake = Feiticos("Quake", 15, 150, "Magia Negra")
+fire = Feiticos("Fire", 30, 600, "Magia Negra")
+thunder = Feiticos("Thunder", 30, 600, "Magia Negra")
+blizzard = Feiticos("Blizzard", 30, 600, "Magia Negra")
+meteor = Feiticos("Meteor", 50, 1200, "Magia Negra")
+quake = Feiticos("Quake", 45, 1500, "Magia Negra")
 
 #Criar Magia Branca
-cure = Feiticos("Cure", 12, 120, "Magia Branca")
-cure2 = Feiticos("Cure 2", 18, 200, "Magia Branca")
+cure = Feiticos("Cure", 27, 620, "Magia Branca")
+cure2 = Feiticos("Cure 2", 34, 2000, "Magia Branca")
 
 # Cria Item
 pocao_pequena = Item("Poção Pequena", "poção", "Cura 50 HP", 50)
@@ -34,10 +35,10 @@ itens_jogador = [{"item": pocao_pequena, "quantidade": 5}, {"item": pocao_media,
                  {"item": elixir_grande, "quantidade": 5}, {"item": granada, "quantidade": 5}]
 
 #Instancia Pessoa
-jogador1 = Pessoa("Kanthus", 450, 65, 60, 34, magias_jogador, itens_jogador)
-jogador2 = Pessoa("Kelthor", 450, 65, 60, 34, magias_jogador, itens_jogador)
-jogador3 = Pessoa("Seforas", 450, 65, 60, 34, magias_jogador, itens_jogador)
-inimigo = Pessoa("Tiamat", 1200, 65, 45, 25, [], [])
+jogador1 = Pessoa("Kanthus", 3250, 132, 300, 34, magias_jogador, itens_jogador)
+jogador2 = Pessoa("Kelthor", 4150, 188, 311, 34, magias_jogador, itens_jogador)
+jogador3 = Pessoa("Seforas", 3050, 150, 288, 34, magias_jogador, itens_jogador)
+inimigo = Pessoa("Tiamat", 12200, 700, 500, 25, [], [])
 
 jogadores = [jogador1, jogador2, jogador3]
 
@@ -54,6 +55,9 @@ while running: #funciona enquanto a batalha estiver ocorrendo
 
     for jogador in jogadores:
         jogador.get_status()
+
+    print("\n")
+    inimigo.get_status_inimigo()
 
     for jogador in jogadores:
         jogador.escolher_acao()
@@ -82,10 +86,10 @@ while running: #funciona enquanto a batalha estiver ocorrendo
 
             if feitico.tipo == "Magia Branca":
                 jogador.curar(dano_magico)
-                print(bcolors.BLUE + "\n" + feitico.nome + " curado em", dano_magico, " pontos de HP." + bcolors.ENDC)
+                print(bcolors.OKBLUE + "\n" + feitico.nome + " lhe curou em", dano_magico, " pontos de HP." + bcolors.ENDC)
             elif feitico.tipo == "Magia Negra":
                 inimigo.receber_dano(dano_magico)
-                print(bcolors.BLUE + "\n" + feitico.nome + " causa ", dano_magico, " de pontos de dano." + bcolors.ENDC)
+                print(bcolors.OKBLUE + "\n" + feitico.nome + " causa ", dano_magico, " de pontos de dano." + bcolors.ENDC)
         elif index == 2:
             jogador.escolher_itens()
             item_escolha = int(input("Qual item deseja usar? ")) - 1
@@ -104,22 +108,25 @@ while running: #funciona enquanto a batalha estiver ocorrendo
                 jogador.curar(item.prop)
                 print(bcolors.OKGREEN + "\n" + item.nome + " cura em ", item.prop, " pontos de HP." + bcolors.ENDC)
             elif item.tipo == "elixir":
-                jogador.hp = jogador.max_hp
-                jogador.mp = jogador.max_mp
+
+                if item.name == "Elixir Grande":
+                    for i in jogadores:
+                        i.hp = i.max_hp
+                        i.mp = i.max_mp
+                else:
+                    jogador.hp = jogador.max_hp
+                    jogador.mp = jogador.max_mp
+
                 print(bcolors.OKGREEN + "\n" + item.nome + " HP/MP completamente restaurados" + bcolors.ENDC)
             elif item.tipo == "ataque":
                 inimigo.receber_dano(item.prop)
                 print(bcolors.OKGREEN + "\n" + item.nome + " causa", item.prop, " pontos de dano." + bcolors.ENDC)
 
     inimigo_escolha = 1
-
+    alvo = random.randrange(0, 3)
     inimigo_dmg = inimigo.gerar_dano()
-    jogador1.receber_dano(inimigo_dmg)
+    jogadores[alvo].receber_dano(inimigo_dmg)
     print(bcolors.FAIL + "Você recebeu:", inimigo_dmg, "pontos de dano do inimigo. HP atual:", jogador.get_hp(), bcolors.ENDC)
-
-    print("=========================================") #Resultados dos ataques
-    print("HP atual do inimigo:", bcolors.FAIL + str(inimigo.get_hp()) + "/" + str(inimigo.get_max_hp()) + bcolors.ENDC)
-    print("MP atual do inimigo", bcolors.OKBLUE + str(inimigo.get_mp()) + "/" + str(inimigo.get_max_mp()) + bcolors.ENDC)
 
     if inimigo.get_hp() == 0: #Checagem de vitoria ou derrota
         print(bcolors.OKGREEN + "Você venceu!!!" + bcolors.ENDC)
