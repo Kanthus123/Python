@@ -1,6 +1,6 @@
 import random
 
-class bcolors:  #Não funciona no Windows sem a biblioteca colorama
+class bcolors:  #Não funciona no Windows sem a biblioteca colorama. Esse problema não é citado na aula devido ao professor estar usando MAC e não estar ciente de tal problema!
 
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -13,7 +13,8 @@ class bcolors:  #Não funciona no Windows sem a biblioteca colorama
 
 class Pessoa:
 
-    def __init__(self, hp, mp, atk, defe, magia):
+    def __init__(self, nome, hp, mp, atk, defe, magia, itens):
+        self.nome = nome
         self.max_hp = hp
         self.hp = hp
         self.max_mp = mp
@@ -22,15 +23,11 @@ class Pessoa:
         self.atkh = atk + 10
         self.defe = defe
         self.magia = magia
-        self.acao = ["Ataque", "Magia"]
+        self.itens = itens
+        self.acao = ["Ataque", "Magia", "Items"]
 
     def gerar_dano(self):
         return random.randrange(self.atkl, self.atkh)
-
-    def gerar_dano_feitico(self, i):
-        mgl = self.magia[i]["dmg"] - 5
-        mgh = self.magia[i]["dmg"] + 5
-        return random.randrange(mgl, mgh)
 
     def curar(self, cura):
         self.hp += cura
@@ -59,12 +56,6 @@ class Pessoa:
     def reduzir_mp(self, custo):
         self.mp -= custo
 
-    def get_nome_feitico(self, i):
-        return self.magia[i]["nome"]
-
-    def get_custo_feitico(self, i):
-        return self.magia[i]["custo"]
-
     def escolher_acao(self):
         i = 1
         print(bcolors.HEADER + "Ações" + bcolors.ENDC)
@@ -76,5 +67,18 @@ class Pessoa:
         i = 1
         print(bcolors.HEADER + "\nMagias" + bcolors.ENDC)
         for feitico in self.magia:
-            print(str(i) + ":", feitico["nome"], "(Custo:", str(feitico["custo"]) + ")")
+            print(str(i) + ":", feitico.nome, "(Custo:", str(feitico.custo) + ")")
             i += 1
+
+    def escolher_itens(self):
+        i = 1
+        print(bcolors.HEADER + "\nItens" + bcolors.ENDC)
+        for item in self.itens:
+            print(str(i) + ":", item["item"].nome, ":", item["item"].descricao, " (x", item["quantidade"], ")")
+            i += 1
+
+    def get_status(self):
+        print("                        _________________________       __________")
+        print(bcolors.BOLD + self.nome + ":        " +
+              str(self.hp) + "/" + str(self.max_hp) + "|" + bcolors.OKGREEN + "█████████████████████████" + bcolors.ENDC + bcolors.BOLD + "|" +
+              str(self.mp) + "/" + str(self.max_mp) + "|" + bcolors.OKBLUE + "██████████" + bcolors.ENDC + "|")
