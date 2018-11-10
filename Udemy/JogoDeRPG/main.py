@@ -29,6 +29,7 @@ elixir_grande = Item("Elixir Grande", "elixir", "Cura completamente o HP/MP de t
 
 granada = Item("Granada", "ataque", "Da 500 pontos de dano", 500)
 
+magias_inimigo = [fire, meteor, cure]
 magias_jogador = [fire, thunder, blizzard, meteor, cure, cure2]
 itens_jogador = [{"item": pocao_pequena, "quantidade": 5}, {"item": pocao_media, "quantidade": 5},
                  {"item": pocao_grande, "quantidade": 5}, {"item": elixir, "quantidade": 5},
@@ -38,9 +39,12 @@ itens_jogador = [{"item": pocao_pequena, "quantidade": 5}, {"item": pocao_media,
 jogador1 = Pessoa("Kanthus", 3250, 132, 300, 34, magias_jogador, itens_jogador)
 jogador2 = Pessoa("Kelthor", 4150, 188, 311, 34, magias_jogador, itens_jogador)
 jogador3 = Pessoa("Seforas", 3050, 150, 288, 34, magias_jogador, itens_jogador)
-inimigo = Pessoa("Tiamat", 12200, 700, 500, 25, [], [])
+inimigo1 = Pessoa("Tiamat       ", 12200, 700, 500, 25, magias_inimigo, [])
+inimigo2 = Pessoa("Dragão Adulto", 6200, 400, 300, 25, magias_inimigo, [])
+inimigo3 = Pessoa("Dragão Adulto", 6200, 400, 300, 25, magias_inimigo, [])
 
 jogadores = [jogador1, jogador2, jogador3]
+inimigos = [inimigo1, inimigo2, inimigo3]
 
 running  = True
 i = 0
@@ -57,7 +61,9 @@ while running: #funciona enquanto a batalha estiver ocorrendo
         jogador.get_status()
 
     print("\n")
-    inimigo.get_status_inimigo()
+
+    for inimigo in inimigos:
+        inimigo.get_status_inimigo()
 
     for jogador in jogadores:
         jogador.escolher_acao()
@@ -67,8 +73,14 @@ while running: #funciona enquanto a batalha estiver ocorrendo
 
         if index  == 0: #Dano Fisico
             dmg = jogador.gerar_dano()
-            inimigo.receber_dano(dmg)
-            print("Você deu:", dmg, "pontos de dano fisico no inimigo.")
+            inimigo = jogador.escolher_alvo(inimigos)
+            inimigos[inimigo].receber_dano(dmg)
+            print("Você deu:", dmg, "pontos de dano fisico no" + inimigos[inimigo].nome.replace(" ", ""))
+
+            if inimigos[inimigo].get_hp() == 0:
+                print(inimigos[inimigo].nome.replace(" ", "") + " morreu.")
+                del inimigos[inimigo]
+
         elif index == 1: #Dano Magico
             jogador.escolher_magia()
             escolha_magia = int(input("Escolha uma magia:")) - 1
@@ -88,8 +100,14 @@ while running: #funciona enquanto a batalha estiver ocorrendo
                 jogador.curar(dano_magico)
                 print(bcolors.OKBLUE + "\n" + feitico.nome + " lhe curou em", dano_magico, " pontos de HP." + bcolors.ENDC)
             elif feitico.tipo == "Magia Negra":
-                inimigo.receber_dano(dano_magico)
-                print(bcolors.OKBLUE + "\n" + feitico.nome + " causa ", dano_magico, " de pontos de dano." + bcolors.ENDC)
+                inimigo = jogador.escolher_alvo(inimigos)
+                inimigos[inimigo].receber_dano(dano_magico)
+                print(bcolors.OKBLUE + "\n" + feitico.nome + " causa ", dano_magico, " de pontos de dano a" + inimigos[inimigo].nome.replace(" ", "")  + bcolors.ENDC)
+
+                if inimigos[inimigo].get_hp() == 0:
+                    print(inimigos[inimigo].nome + " morreu.")
+                    del inimigos[inimigo]
+
         elif index == 2:
             jogador.escolher_itens()
             item_escolha = int(input("Qual item deseja usar? ")) - 1
@@ -119,18 +137,65 @@ while running: #funciona enquanto a batalha estiver ocorrendo
 
                 print(bcolors.OKGREEN + "\n" + item.nome + " HP/MP completamente restaurados" + bcolors.ENDC)
             elif item.tipo == "ataque":
-                inimigo.receber_dano(item.prop)
-                print(bcolors.OKGREEN + "\n" + item.nome + " causa", item.prop, " pontos de dano." + bcolors.ENDC)
+                inimigo = jogador.escolher_alvo(inimigos)
+                inimigos[inimigo].receber_dano(item.prop)
 
-    inimigo_escolha = 1
-    alvo = random.randrange(0, 3)
-    inimigo_dmg = inimigo.gerar_dano()
-    jogadores[alvo].receber_dano(inimigo_dmg)
-    print(bcolors.FAIL + "Você recebeu:", inimigo_dmg, "pontos de dano do inimigo. HP atual:", jogador.get_hp(), bcolors.ENDC)
+                print(bcolors.OKGREEN + "\n" + item.nome + " causa", item.prop, " pontos de dano a" + inimigos[inimigo].nome.replace(" ", "") + bcolors.ENDC)
 
-    if inimigo.get_hp() == 0: #Checagem de vitoria ou derrota
-        print(bcolors.OKGREEN + "Você venceu!!!" + bcolors.ENDC)
+                if inimigos[inimigo].get_hp() == 0:
+                    print(inimigos[inimigo].nome.replace(" ", "") + " morreu.")
+                    del inimigos[inimigo]
+
+    #Checa se a batalha acabou
+    inimigos_derrotados = 0
+    jogadores_derrotados = 0
+
+    for inimigo in inimigos:
+        if inimigo.get_hp() == 0:
+            inimigos_derrotados += 1
+
+    for jogador in jogadores:
+        if jogador.get_hp() == 0:
+            jogadores_derrotados += 1
+
+    if inimigos_derrotados == 3: #Checagem de vitoria ou derrota
+        print(bcolors.OKGREEN + "Vocês venceram!!!" + bcolors.ENDC)
         running = False
-    elif jogador.get_hp() == 0:
-        print(bcolors.FAIL + "Você foi derrotado pelo inimigo !!!!" + bcolors.ENDC)
+    elif jogadores_derrotados == 3:
+        print(bcolors.FAIL + "Você foi derrotado pelos inimigos !!!!" + bcolors.ENDC)
         running = False
+
+    print("\n")
+    #Ataque do Inimigo
+    for inimigo in inimigos:
+        inimigo_escolha = random.randrange(0, 2)
+
+        if inimigo_escolha == 0:
+            alvo = random.randrange(0, 3)
+            inimigo_dmg = inimigos[0].gerar_dano()
+            jogadores[alvo].receber_dano(inimigo_dmg)
+            print(inimigo.nome.replace(" ", "") + " ataca " + jogadores[alvo].nome.replace(" ", "") + " causando", inimigo_dmg, " pontos de dano!")
+
+        elif inimigo_escolha == 1:
+            escolha_magia = random.randrange(0, len(inimigo.magia))
+            feitico = inimigo.magia[escolha_magia]
+            dano_magico = feitico.gerar_dano_magico()
+
+            if inimigo.mp == feitico.custo:
+                feitico, dano_magico = inimigo.escolher_feitico_inimigo()
+                inimigo.reduzir_mp(feitico.custo)
+
+                if feitico.tipo == "Magia Branca":
+                    inimigo.curar(dano_magico)
+                    print(bcolors.OKBLUE + feitico.nome + " curou" + inimigo.nome +  " em", dano_magico, " pontos de HP." + bcolors.ENDC)
+                elif feitico.tipo == "Magia Negra":
+
+                    alvo = random.randrange(0, 3)
+                    jogadores[alvo].receber_dano(dano_magico)
+
+                    print(bcolors.OKBLUE + "\n" + inimigo.nome.replace(" ", "") + feitico.nome + " causa ", dano_magico, " de pontos de dano a" + jogadores[alvo].nome.replace(" ", "")  + bcolors.ENDC)
+
+                    if jogadores[alvo].get_hp() == 0:
+                        print(jogadores[alvo].nome + " morreu.")
+                        del jogadores[jogador]
+                print("Inimigo castou ", feitico, "e causou ")

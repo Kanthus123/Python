@@ -78,6 +78,17 @@ class Pessoa:
             print(str(i) + ":", item["item"].nome, ":", item["item"].descricao, " (x", item["quantidade"], ")")
             i += 1
 
+    def escolher_alvo(self, inimigos):
+        i = 1
+        print("\n"+ bcolors.FAIL + bcolors.BOLD + "ALVO:" + bcolors.ENDC)
+        for inimigo in inimigos:
+            if inimigo.get_hp() != 0:
+                print(" " + str(i) + ".", inimigo.nome)
+                i += 1
+        escolha= int(input("Escolha o alvo:")) - 1
+        return escolha
+
+
     def get_status_inimigo(self): #status dos inimigos
         barra_hp = ""
         barra_ticks = (self.hp / self.max_hp) * 100  / 2
@@ -103,7 +114,7 @@ class Pessoa:
         else:
             hp_atual = hp_string
 
-        print("                           __________________________________________________")
+        print("                                  __________________________________________________")
         print(bcolors.BOLD + self.nome + ":        " +
               hp_atual + "|" + bcolors.FAIL + barra_hp + bcolors.ENDC + "|")
 
@@ -160,3 +171,15 @@ class Pessoa:
         print(bcolors.BOLD + self.nome + ":        " +
               hp_atual + "|" + bcolors.OKGREEN + barra_hp + bcolors.ENDC + bcolors.BOLD + "|    " +
               mp_atual + "|" + bcolors.OKBLUE + barra_mp + bcolors.ENDC + "|")
+
+
+    def escolher_feitico_inimigo(self):
+        escolha_magia = random.randrange(0, len(self.magia))
+        feitico = self.magia[escolha_magia]
+        dano_magico = feitico.gerar_dano_magico()
+        pct = self.hp / self.max_hp * 100
+
+        if inimigo.mp == feitico.custo or feitico.tipo == "Magia Branca" and pct > 50:
+            self.escolher_feitico_inimigo()
+        else:
+            return feitico, dano_magico
