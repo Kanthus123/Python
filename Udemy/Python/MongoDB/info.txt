@@ -1,0 +1,8 @@
+Baixar MongoDB
+Baixar PyMongo -> pip3 install pymongo
+Baixar Robo 3T
+
+iniciar mongod.exe
+colocar mongodb na path
+iniciar mongodb -> mongo no cmd
+criar um BD no robo 3t
