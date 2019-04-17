@@ -2,10 +2,10 @@
 
 O que sera encontrado nesse repositorio? 
 
-Programas feitos para o site Uri Judge Online
-Cursos na Udemy envolvendo Python
-Projetos pessoais em Python
-Estudos em diversos topicos usando Python
+1 - Programas feitos para o site Uri Judge Online
+2 - Cursos feitos na Udemy envolvendo Python
+3 - Projetos pessoais em Python
+4 - Estudos em diversos topicos usando Python
 
 ---------------------------------------------------
 
